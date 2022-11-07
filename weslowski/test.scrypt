@@ -1,0 +1,15 @@
+import "vdf-verifier-weslowski.scrypt";
+
+contract TestVDFVerifierWeslowski {
+    
+    public function testEntropyFromSeed(bytes seed, bytes expectedRes) {
+        bytes res = VDFVerifierWeslowski.entropyFromSeed(seed);
+        require(res == expectedRes);
+    }
+
+    public function testCreateDiscriminant(bytes seed, int expectedRes) {
+        int res = VDFVerifierWeslowski.createDiscriminant(seed);
+        require(res == expectedRes);
+    }
+
+}

@@ -1,0 +1,78 @@
+import "residues.scrypt";
+
+
+library VDFVerifierWeslowski {
+
+    // For now we use fixed length challanges.
+    static const int SEED_N_BYTES = 32;    
+
+    // 2048 bit RSA setting.
+    static const int BIT_LEN = 2048;
+    static const int ENTROPY_N_BYTES = 258; // ((BIT_LEN + 7) >> 3) + 2
+    static const int ENTROPY_FROM_SEED_N_LOOPS = 9;  // CEIL(ENTROPY_N_BYTES / SHA256_BYTES)
+
+    static const int m = 120120; // 8 * 3 * 5 * 7 * 11 * 13
+
+    static function modReduce(int k, int modulus) : int {
+        int res = k % modulus;
+        return (res < 0) ? res + modulus : res;
+    }
+
+    static function setBit(int n, int i, bool val) : int {
+        int res = 0;
+        if (val) {
+            res = n | (1 << i);
+        } else {
+            res = n & ~(1 << i);
+        }
+        return res;
+    }
+    
+    static function entropyFromSeed(bytes seed) : bytes {
+        bytes resBuff = b'';
+        
+        int extra = 0;
+        loop (ENTROPY_FROM_SEED_N_LOOPS) : i {
+            bytes extraBytes = reverseBytes(num2bin(extra, 2), 2);
+            bytes moreEntropy = sha256(seed + extraBytes);
+            resBuff += moreEntropy;
+            extra += 1;
+        }
+
+        return resBuff[:ENTROPY_N_BYTES];
+    }
+    
+    static function createDiscriminant(bytes seed) : int {
+        bytes entropy = entropyFromSeed(seed);
+
+        int n = unpack(reverseBytes(entropy[:ENTROPY_N_BYTES - 2], 256) + b'00');
+        n = setBit(n, ENTROPY_N_BYTES - 1, true);
+        n -= modReduce(n, m);
+        n += Residues.VALS[unpack(reverseBytes(entropy[ENTROPY_N_BYTES - 2 :], 2) + b'00') % Residues.N_VALS];
+
+        int negN = n * -1;
+
+    	// Find the smallest prime >= n of the form n + m*x
+        // TODO: optimize somehow?
+        bool[] sieve = repeat(false, 65536);  // 2**16
+
+        bytes tmp = num2bin(sieve, 2);
+
+        
+        return 0;
+    }
+
+    static function verify(
+        bytes challange,
+        int difficulty,
+        bytes proof
+        ) : bool {
+        
+        // TODO: Ensure challange length if correct
+
+        // Create discriminant.
+
+
+        return false;
+    }
+}
