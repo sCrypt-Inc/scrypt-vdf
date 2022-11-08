@@ -1,0 +1,80 @@
+
+library VDFVerifierWeslowski {
+
+    static const int RSA_MODULUS_0 = 0x31f55615172866bccc30f95054c824e733a5eb6817f7bc16399d48c6361cc7e5;
+    static const int RSA_MODULUS_1 = 0xbc729592642920f24c61dc5b3c3b7923e56b16a4d9d373d8721f24a3fc0f1b31;
+    static const int RSA_MODULUS_2 = 0xf6135809f85334b5cb1813addc80cd05609f10ac6a95ad65872c909525bdad32;
+    static const int RSA_MODULUS_3 = 0xf7e8daefd26c66fc02c479af89d64d373f442709439de66ceb955f3ea37d5159;
+    static const int RSA_MODULUS_4 = 0xb4f14a04b51f7bfd781be4d1673164ba8eb991c2c4d730bbbe35f592bdef524a;
+    static const int RSA_MODULUS_5 = 0xa31f5b0b7765ff8b44b4b6ffc93384b646eb09c7cf5e8592d40ea33c80039f35;
+    static const int RSA_MODULUS_6 = 0x7ff0db8e1ea1189ec72f93d1650011bd721aeeacc2acde32a04107f0648c2813;
+    static const int RSA_MODULUS_7 = 0xc7970ceedcc3b0754490201a7aa613cd73911081c790f5f1a8726f463550bb5b;
+
+    static const bytes RSA_MODULUS = b'c7970ceedcc3b0754490201a7aa613cd73911081c790f5f1a8726f463550bb5b7ff0db8e1ea1189ec72f93d1650011bd721aeeacc2acde32a04107f0648c2813a31f5b0b7765ff8b44b4b6ffc93384b646eb09c7cf5e8592d40ea33c80039f35b4f14a04b51f7bfd781be4d1673164ba8eb991c2c4d730bbbe35f592bdef524af7e8daefd26c66fc02c479af89d64d373f442709439de66ceb955f3ea37d5159f6135809f85334b5cb1813addc80cd05609f10ac6a95ad65872c909525bdad32bc729592642920f24c61dc5b3c3b7923e56b16a4d9d373d8721f24a3fc0f1b3131f55615172866bccc30f95054c824e733a5eb6817f7bc16399d48c6361cc7e5';
+  
+    static const int MILLER_RABIN_ROUNDS = 15;
+    static const int MAX_NONCE = 65536;   
+    
+    static function verify(int g, int pi, int y, int q, int nonce, int delay) : bool {
+        bool ret = true;
+
+        ret = ret && validateNonce(nonce);
+        ret = ret && validateGroupElement(g);
+        ret = ret && !isZeroGroupElement(g);
+        ret = ret && validateGroupElement(pi);
+        ret = ret && !isZeroGroupElement(pi);
+        ret = ret && validateGroupElement(y);
+        ret = ret && !isZeroGroupElement(y);
+        ret = ret && validateGroupElement(q);
+
+        int l = hashToPrime(g, y, nonce);
+        ret = ret && millerRabinPrimalityTest(l);
+
+        int r = modexp(2, delay, l);
+        int u1 = exp(pi, l);
+        int u2 = exp(g, r);
+        return ret && mulModEqual(u1, u2, y, q);
+    }
+    
+    static function hashToPrime(int g, int y, int nonce) : int {
+        // num2bin requires one more byte for sign information.
+        // We can throw this byte away after the conversion.
+        bytes gBytes = reverseBytes(num2bin(g, 257)[:257], 256);
+        bytes yBytes = reverseBytes(num2bin(y, 257)[:257], 256);
+        bytes nonceBytes = reverseBytes(num2bin(nonce, 33)[:33], 32);
+        int l = unpack(sha256(gBytes + yBytes + nonceBytes) + b'00');
+        if ((l & 1) == 0) {
+            l += 1;
+        }
+        return l;
+    }
+
+    static function millerRabinPrimalityTest(int n) : bool {
+        return true;
+    }
+
+    static function modexp(int base, int exponent, int modulus) : int {
+        return 1;
+    }
+
+    static function exp(int base, int exponent) : int {
+        return 1;
+    }
+
+    static function mulModEqual(int a, int b, int y, int q) : bool {
+        return true;
+    }
+
+    static function validateNonce(int nonce) : bool {
+        return nonce < MAX_NONCE;
+    }
+
+    static function validateGroupElement(int e) : bool {
+        return true;
+    }
+
+    static function isZeroGroupElement(int e) : bool {
+        return true;
+    }
+
+}

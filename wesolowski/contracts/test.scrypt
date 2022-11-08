@@ -1,0 +1,9 @@
+import "vdf-verifier-weslowski.scrypt";
+
+contract TestVDFVerifierWeslowski {
+    
+    public function testHashToPrime(int g, int y, int nonce, int expectedRes) {
+        require(VDFVerifierWeslowski.hashToPrime(g, y, nonce) == expectedRes);
+    }
+
+}
