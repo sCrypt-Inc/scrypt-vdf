@@ -6,4 +6,16 @@ contract TestVDFVerifierWeslowski {
         require(VDFVerifierWeslowski.hashToPrime(g, y, nonce) == expectedRes);
     }
 
+    public function testModExp(int base, int exponent, int modulus, int result) {
+        require(VDFVerifierWeslowski.modexp(base, exponent, modulus) == result);
+    }
+
+    public function testMillerRabinPrimalityTest(int n, bool isPrime) {
+        require(VDFVerifierWeslowski.millerRabinPrimalityTest(n) == isPrime);
+    }
+
+    public function testVerify(int g, int pi, int y, int q, int nonce, int delay, bool isValid) {
+        require(VDFVerifierWeslowski.verify(g, pi, y, q, nonce, delay) == isValid);
+    }
+
 }
