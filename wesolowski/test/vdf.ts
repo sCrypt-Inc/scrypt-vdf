@@ -5,6 +5,8 @@ import { E, exp, find_q, mulE, newE, randE, toBytes } from './rsa';
 
 const MILLER_RABIN_ROUNDS = 15;
 const DST = '0x';
+const MAX_NONCE = 65536;   
+
 
 export interface Challenge {
   l: E;
@@ -127,9 +129,9 @@ export function verify(g: E, t: number, proof: Proof): boolean {
     return false;
   }
 
-  const T = newE(1).shl(t);
+  const r = newE(1).shl(t).mod(MAX_NONCE);
   const u1 = exp(proof.pi, proof.challenge.l);
-  const u2 = exp(g, T);
+  const u2 = exp(g, r);
   return mulE(u1, u2).eq(proof.y);
 }
 

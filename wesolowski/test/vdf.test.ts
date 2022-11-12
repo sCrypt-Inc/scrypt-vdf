@@ -1,18 +1,17 @@
 import path = require("path");
 const fs = require("fs");
 import { describe, before, it } from 'mocha';
-import { expect, use } from 'chai';
+import { expect } from 'chai';
 
 import * as crypto from "crypto";
 import BN from 'bn.js';
 
 import { randE, exp, toBytes, randBigNumber } from './rsa';
-import { evaluate, isProbablePrime, randPrime, verify } from './vdf';
+import { evaluate, isProbablePrime, randPrime } from './vdf';
 
 import {
     buildContractClass, buildTypeClasses, compileContract
 } from "scryptlib";
-import { BigNumber } from "@ethersproject/bignumber";
 
 
 describe('VDF', function () {
@@ -83,7 +82,7 @@ describe('VDF', function () {
 
   it('verify vdf', async function () {
     const g = randE();
-    const t = 4;
+    const t = 7;
     const proof = evaluate(g, t);
     
     const result = testVDFVerfifier.testVerify(

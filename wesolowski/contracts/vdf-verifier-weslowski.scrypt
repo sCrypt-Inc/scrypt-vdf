@@ -18,9 +18,9 @@ library VDFVerifierWeslowski {
         int l = hashToPrime(g, y, nonce);
         ret = ret && millerRabinPrimalityTest(l);
 
-        int t = 1 << delay;
+        int r = modReduce(1 << delay, MAX_NONCE);
         int u1 = modexp(pi, l, RSA_MODULUS); // TODO: can optimize because of static modulus
-        int u2 = modexp(g, t, RSA_MODULUS);
+        int u2 = modexp(g, r, RSA_MODULUS);
         return ret && (mulmod(u1, u2, RSA_MODULUS) == y);
     }
     
